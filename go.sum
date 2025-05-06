@@ -15,8 +15,8 @@ github.com/cryptellation/dbmigrator v1.0.1 h1:LdtohjurN31oWpiF4EdE7irPdB8c3Q1ghY
 github.com/cryptellation/dbmigrator v1.0.1/go.mod h1:WtyJbIg0tAgEZIMnOjW2sTp1hVc4jRTK1xx2PD5zssk=
 github.com/cryptellation/health v1.0.1 h1:wZp/y4z8CbSVKUWCL/+8TdPPAPWLScUrJl/YBJf5z5I=
 github.com/cryptellation/health v1.0.1/go.mod h1:V5JEOyvgWHMerjn5XyXllNSRHxCeCxKmWtT8YCz6W3c=
-github.com/cryptellation/timeseries v1.0.2 h1:Vdrp4AZ7yfBlyANtU7vT9SptBQs8vdjXyjRnkX0C7iA=
-github.com/cryptellation/timeseries v1.0.2/go.mod h1:SxqmKOjn/l5AXZGaLGA47oScXzpTcXtnmfom88uZdaY=
+github.com/cryptellation/timeseries v1.1.0 h1:S5xFLGukQg+k22+L5151Na95+WjhhDKMK0hBkxfJYgo=
+github.com/cryptellation/timeseries v1.1.0/go.mod h1:SxqmKOjn/l5AXZGaLGA47oScXzpTcXtnmfom88uZdaY=
 github.com/cryptellation/version v1.1.0 h1:guPP4DVPj0Ie1Fnmmiv3VM4xqG7ZMJGjvrS41mHg5Pc=
 github.com/cryptellation/version v1.1.0/go.mod h1:tKR3hxz6uB6AhgA0TKM3Qp6JNAgdQ2PcB0GGcsBWQvg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
