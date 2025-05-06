@@ -1,2 +1,3 @@
-# sma
+# SMA
+
 Cryptellation SMA service

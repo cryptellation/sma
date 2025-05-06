@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start dependencies",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f", "deployments/docker-compose/dependencies.docker-compose.yaml", 
+                "-p", "cryptellation-sma-debug", 
+                "up", "-d",
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "close": true
+            }
+        },
+        {
+            "label": "Stop dependencies",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f", "deployments/docker-compose/dependencies.docker-compose.yaml", 
+                "-p", "cryptellation-sma-debug", 
+                "down",
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "close": true
+            }
+        }
+    ]
+}

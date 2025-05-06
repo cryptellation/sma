@@ -1,0 +1,115 @@
+# name: CI
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   check:
+#     name: Run code custom check
+#     if: github.event_name == 'pull_request'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: dagger/dagger-for-github@8.0.0
+#         with:
+#           version: latest
+#           verb: call
+#           args: check --source-dir=. stdout
+
+#   generate:
+#     name: Run code generation and check that the generated code is up to date
+#     if: github.event_name == 'pull_request'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: dagger/dagger-for-github@8.0.0
+#         with:
+#           version: latest
+#           verb: call
+#           args: generate --source-dir=. stdout 
+
+#   lint:
+#     name: Run linter
+#     if: github.event_name == 'pull_request'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: dagger/dagger-for-github@8.0.0
+#         with:
+#           version: latest
+#           verb: call
+#           args: lint --source-dir=. stdout 
+
+#   unit-tests:
+#     name: Run unit tests
+#     needs: ["lint", "generate", "check"]
+#     if: github.event_name == 'pull_request'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: dagger/dagger-for-github@8.0.0
+#         with:
+#           version: latest
+#           verb: call
+#           args: unit-tests --source-dir=. stdout 
+
+#   publish-tag:
+#     name: Publish the tag of the new version
+#     permissions:
+#       contents: write
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     if: github.ref == 'refs/heads/main'
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event.pull_request.head.sha }}
+#           fetch-depth: 0
+#       - uses: dagger/dagger-for-github@8.0.0
+#         with:
+#           version: latest
+#           verb: call
+#           args: >-
+#             publish-tag
+#             --source-dir=.
+#             --user=env:GITHUB_ACTOR
+#             --token=env:GITHUB_TOKEN
+#         env:
+#           GITHUB_ACTOR: ${{ github.actor }}
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#   publish-container:
+#     name: Publish the container of the new version
+#     needs: ["publish-tag"]
+#     permissions:
+#       packages: write
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     if: github.ref == 'refs/heads/main'
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event.pull_request.head.sha }}
+#           fetch-depth: 0
+#       - name: Log in to the Container registry
+#         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+#         with:
+#           registry: ghcr.io
+#           username: ${{ github.actor }}
+#           password: ${{ secrets.GITHUB_TOKEN }}
+#       - uses: dagger/dagger-for-github@8.0.0
+#         with:
+#           version: latest
+#           verb: call
+#           args: >-
+#             publish-container
+#             --source-dir=.

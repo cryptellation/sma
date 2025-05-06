@@ -1,0 +1,4 @@
+.credentials.env
+bin/
+tmp/
+__debug_bin*
