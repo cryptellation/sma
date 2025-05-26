@@ -32,7 +32,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 FROM --platform=${TARGETOS}/${TARGETARCH} ${TARGETBASEIMAGE} AS final
 
 # Set environment variables
-ENV HEALTH_PORT=9000
+ENV HEALTH_ADDRESS=":9000"
 
 # Expose ports
 EXPOSE 9000
