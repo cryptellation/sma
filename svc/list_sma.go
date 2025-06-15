@@ -129,7 +129,10 @@ func (wf *workflows) generateAndUpsertSMA(
 func (wf *workflows) generateSMA(
 	ctx workflow.Context,
 	params api.ListWorkflowParams,
-) (*timeseries.TimeSerie[float64], error) {
+) ([]struct {
+	Time  time.Time
+	Value float64
+}, error) {
 	// Get necessary candlesticks
 	start := params.Start.Add(-params.Period.Duration() * time.Duration(params.PeriodNumber))
 	res, err := wf.candlesticks.ListCandlesticks(ctx, candlesticksapi.ListCandlesticksWorkflowParams{
@@ -153,23 +156,53 @@ func (wf *workflows) generateSMA(
 		}
 	}
 
-	return sma.TimeSerie(sma.TimeSerieParams{
+	ts, err := sma.TimeSerie(sma.TimeSerieParams{
 		Candlesticks: csList,
 		PriceType:    params.PriceType,
 		Start:        params.Start,
 		End:          params.End,
 		PeriodNumber: params.PeriodNumber,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert timeserie to slice of structs
+	data := make([]struct {
+		Time  time.Time
+		Value float64
+	}, 0, ts.Len())
+	err = ts.Loop(func(t time.Time, v float64) (bool, error) {
+		data = append(data, struct {
+			Time  time.Time
+			Value float64
+		}{Time: t, Value: v})
+		return false, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func (wf *workflows) upsertSMA(
 	ctx workflow.Context,
 	params api.ListWorkflowParams,
-	data *timeseries.TimeSerie[float64],
+	data []struct {
+		Time  time.Time
+		Value float64
+	},
 ) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Upserting SMA points",
-		"count", data.Len())
+		"count", len(data))
+
+	// Convert slice to timeserie for DB
+	ts := timeseries.New[float64]()
+	for _, d := range data {
+		ts.Set(d.Time, d.Value)
+	}
 
 	var upsertDBRes db.UpsertSMAActivityResults
 	return workflow.ExecuteActivity(
@@ -180,6 +213,6 @@ func (wf *workflows) upsertSMA(
 			Period:       params.Period,
 			PeriodNumber: params.PeriodNumber,
 			PriceType:    params.PriceType,
-			TimeSerie:    data,
+			TimeSerie:    ts,
 		}).Get(ctx, &upsertDBRes)
 }
