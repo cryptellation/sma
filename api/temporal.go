@@ -5,7 +5,6 @@ import (
 
 	"github.com/cryptellation/candlesticks/pkg/candlestick"
 	"github.com/cryptellation/candlesticks/pkg/period"
-	"github.com/cryptellation/timeseries"
 )
 
 const (
@@ -32,7 +31,10 @@ type (
 
 	// ListWorkflowResults is the result of the List workflow.
 	ListWorkflowResults struct {
-		Data *timeseries.TimeSerie[float64]
+		Data []struct {
+			Time  time.Time
+			Value float64
+		}
 	}
 )
 

@@ -83,8 +83,24 @@ func (wf *workflows) getSMAFromDBAndCheck(
 	missingPoints := readDBRes.Data.AreMissing(params.Start, params.End, params.Period.Duration(), 0)
 	upToDate = !missingPoints && !possiblyOutdatedSMA && !sma.InvalidValues(readDBRes.Data)
 
+	// Convert timeserie to slice of structs
+	data := make([]struct {
+		Time  time.Time
+		Value float64
+	}, 0, readDBRes.Data.Len())
+	err = readDBRes.Data.Loop(func(t time.Time, v float64) (bool, error) {
+		data = append(data, struct {
+			Time  time.Time
+			Value float64
+		}{Time: t, Value: v})
+		return false, nil
+	})
+	if err != nil {
+		return api.ListWorkflowResults{}, false, err
+	}
+
 	return api.ListWorkflowResults{
-		Data: readDBRes.Data,
+		Data: data,
 	}, upToDate, nil
 }
 
@@ -127,6 +143,25 @@ func (wf *workflows) generateAndUpsertSMA(
 		return api.ListWorkflowResults{}, err
 	}
 
+	logger.Info("Upserting SMA points",
+		"count", data.Len())
+
+	// Convert timeserie to slice of structs
+	resultData := make([]struct {
+		Time  time.Time
+		Value float64
+	}, 0, data.Len())
+	err = data.Loop(func(t time.Time, v float64) (bool, error) {
+		resultData = append(resultData, struct {
+			Time  time.Time
+			Value float64
+		}{Time: t, Value: v})
+		return false, nil
+	})
+	if err != nil {
+		return api.ListWorkflowResults{}, err
+	}
+
 	// Save SMA points to DB and return the result
 	var upsertDBRes db.UpsertSMAActivityResults
 	err = workflow.ExecuteActivity(
@@ -140,10 +175,7 @@ func (wf *workflows) generateAndUpsertSMA(
 			TimeSerie:    data,
 		}).Get(ctx, &upsertDBRes)
 
-	logger.Info("Upserting SMA points",
-		"count", data.Len())
-
 	return api.ListWorkflowResults{
-		Data: data,
+		Data: resultData,
 	}, err
 }

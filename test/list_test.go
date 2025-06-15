@@ -34,17 +34,21 @@ func (suite *EndToEndSuite) TestListIndicators() {
 
 	// AND the response contains the proper SMA
 
-	suite.Require().Equal(3, ts.Data.Len())
+	suite.Require().Equal(3, len(ts.Data))
 
-	v, exists := ts.Data.Get(t1)
-	suite.Require().True(exists)
-	suite.Require().Equal(1603.8966666666668, v)
+	// Find values by time
+	var v1, v2, v3 float64
+	for _, d := range ts.Data {
+		if d.Time.Equal(t1) {
+			v1 = d.Value
+		} else if d.Time.Equal(t2) {
+			v2 = d.Value
+		} else if d.Time.Equal(t3) {
+			v3 = d.Value
+		}
+	}
 
-	v, exists = ts.Data.Get(t2)
-	suite.Require().True(exists)
-	suite.Require().Equal(1604.17, v)
-
-	v, exists = ts.Data.Get(t3)
-	suite.Require().True(exists)
-	suite.Require().Equal(1604.3533333333335, v)
+	suite.Require().Equal(1603.8966666666668, v1)
+	suite.Require().Equal(1604.17, v2)
+	suite.Require().Equal(1604.3533333333335, v3)
 }
