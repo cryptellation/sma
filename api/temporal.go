@@ -5,7 +5,6 @@ import (
 
 	"github.com/cryptellation/candlesticks/pkg/candlestick"
 	"github.com/cryptellation/candlesticks/pkg/period"
-	"github.com/cryptellation/timeseries"
 )
 
 const (
@@ -30,9 +29,15 @@ type (
 		PriceType    candlestick.PriceType
 	}
 
+	// SMADataPoint represents a single SMA data point with its time and value.
+	SMADataPoint struct {
+		Time  time.Time
+		Value float64
+	}
+
 	// ListWorkflowResults is the result of the List workflow.
 	ListWorkflowResults struct {
-		Data *timeseries.TimeSerie[float64]
+		Data []SMADataPoint
 	}
 )
 
