@@ -85,15 +85,12 @@ func (wf *workflows) getSMAFromDBAndCheck(
 	upToDate = !missingPoints && !possiblyOutdatedSMA && !sma.InvalidValues(readDBRes.Data)
 
 	// Convert timeserie to slice of structs
-	data := make([]struct {
-		Time  time.Time
-		Value float64
-	}, 0, readDBRes.Data.Len())
+	data := make([]api.SMADataPoint, 0, readDBRes.Data.Len())
 	err = readDBRes.Data.Loop(func(t time.Time, v float64) (bool, error) {
-		data = append(data, struct {
-			Time  time.Time
-			Value float64
-		}{Time: t, Value: v})
+		data = append(data, api.SMADataPoint{
+			Time:  t,
+			Value: v,
+		})
 		return false, nil
 	})
 	if err != nil {
@@ -129,10 +126,7 @@ func (wf *workflows) generateAndUpsertSMA(
 func (wf *workflows) generateSMA(
 	ctx workflow.Context,
 	params api.ListWorkflowParams,
-) ([]struct {
-	Time  time.Time
-	Value float64
-}, error) {
+) ([]api.SMADataPoint, error) {
 	// Get necessary candlesticks
 	start := params.Start.Add(-params.Period.Duration() * time.Duration(params.PeriodNumber))
 	res, err := wf.candlesticks.ListCandlesticks(ctx, candlesticksapi.ListCandlesticksWorkflowParams{
@@ -168,15 +162,12 @@ func (wf *workflows) generateSMA(
 	}
 
 	// Convert timeserie to slice of structs
-	data := make([]struct {
-		Time  time.Time
-		Value float64
-	}, 0, ts.Len())
+	data := make([]api.SMADataPoint, 0, ts.Len())
 	err = ts.Loop(func(t time.Time, v float64) (bool, error) {
-		data = append(data, struct {
-			Time  time.Time
-			Value float64
-		}{Time: t, Value: v})
+		data = append(data, api.SMADataPoint{
+			Time:  t,
+			Value: v,
+		})
 		return false, nil
 	})
 	if err != nil {
@@ -189,10 +180,7 @@ func (wf *workflows) generateSMA(
 func (wf *workflows) upsertSMA(
 	ctx workflow.Context,
 	params api.ListWorkflowParams,
-	data []struct {
-		Time  time.Time
-		Value float64
-	},
+	data []api.SMADataPoint,
 ) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Upserting SMA points",

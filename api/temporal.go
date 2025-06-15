@@ -29,12 +29,15 @@ type (
 		PriceType    candlestick.PriceType
 	}
 
+	// SMADataPoint represents a single SMA data point with its time and value.
+	SMADataPoint struct {
+		Time  time.Time
+		Value float64
+	}
+
 	// ListWorkflowResults is the result of the List workflow.
 	ListWorkflowResults struct {
-		Data []struct {
-			Time  time.Time
-			Value float64
-		}
+		Data []SMADataPoint
 	}
 )
 
