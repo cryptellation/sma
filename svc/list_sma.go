@@ -4,6 +4,7 @@ import (
 	"time"
 
 	candlesticksapi "github.com/cryptellation/candlesticks/api"
+	"github.com/cryptellation/candlesticks/pkg/candlestick"
 	"github.com/cryptellation/sma/api"
 	"github.com/cryptellation/sma/pkg/sma"
 	"github.com/cryptellation/sma/svc/db"
@@ -109,8 +110,14 @@ func (wf *workflows) generateAndUpsertSMA(
 	}
 
 	// Generate SMAs and return them
+	csList := candlestick.NewList(params.Exchange, params.Pair, params.Period)
+	for _, cs := range res.List {
+		if err := csList.Set(cs); err != nil {
+			return api.ListWorkflowResults{}, err
+		}
+	}
 	data, err := sma.TimeSerie(sma.TimeSerieParams{
-		Candlesticks: res.List,
+		Candlesticks: csList,
 		PriceType:    params.PriceType,
 		Start:        params.Start,
 		End:          params.End,
