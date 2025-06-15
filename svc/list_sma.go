@@ -8,6 +8,7 @@ import (
 	"github.com/cryptellation/sma/api"
 	"github.com/cryptellation/sma/pkg/sma"
 	"github.com/cryptellation/sma/svc/db"
+	"github.com/cryptellation/timeseries"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -108,8 +109,27 @@ func (wf *workflows) generateAndUpsertSMA(
 	ctx workflow.Context,
 	params api.ListWorkflowParams,
 ) (api.ListWorkflowResults, error) {
-	logger := workflow.GetLogger(ctx)
+	// Get necessary candlesticks
+	data, err := wf.generateSMA(ctx, params)
+	if err != nil {
+		return api.ListWorkflowResults{}, err
+	}
 
+	// Save SMA points to DB and return the result
+	err = wf.upsertSMA(ctx, params, data)
+	if err != nil {
+		return api.ListWorkflowResults{}, err
+	}
+
+	return api.ListWorkflowResults{
+		Data: data,
+	}, nil
+}
+
+func (wf *workflows) generateSMA(
+	ctx workflow.Context,
+	params api.ListWorkflowParams,
+) (*timeseries.TimeSerie[float64], error) {
 	// Get necessary candlesticks
 	start := params.Start.Add(-params.Period.Duration() * time.Duration(params.PeriodNumber))
 	res, err := wf.candlesticks.ListCandlesticks(ctx, candlesticksapi.ListCandlesticksWorkflowParams{
@@ -122,49 +142,37 @@ func (wf *workflows) generateAndUpsertSMA(
 		TaskQueue: candlesticksapi.WorkerTaskQueueName,
 	})
 	if err != nil {
-		return api.ListWorkflowResults{}, err
+		return nil, err
 	}
 
 	// Generate SMAs and return them
 	csList := candlestick.NewList(params.Exchange, params.Pair, params.Period)
 	for _, cs := range res.List {
 		if err := csList.Set(cs); err != nil {
-			return api.ListWorkflowResults{}, err
+			return nil, err
 		}
 	}
-	data, err := sma.TimeSerie(sma.TimeSerieParams{
+
+	return sma.TimeSerie(sma.TimeSerieParams{
 		Candlesticks: csList,
 		PriceType:    params.PriceType,
 		Start:        params.Start,
 		End:          params.End,
 		PeriodNumber: params.PeriodNumber,
 	})
-	if err != nil {
-		return api.ListWorkflowResults{}, err
-	}
+}
 
+func (wf *workflows) upsertSMA(
+	ctx workflow.Context,
+	params api.ListWorkflowParams,
+	data *timeseries.TimeSerie[float64],
+) error {
+	logger := workflow.GetLogger(ctx)
 	logger.Info("Upserting SMA points",
 		"count", data.Len())
 
-	// Convert timeserie to slice of structs
-	resultData := make([]struct {
-		Time  time.Time
-		Value float64
-	}, 0, data.Len())
-	err = data.Loop(func(t time.Time, v float64) (bool, error) {
-		resultData = append(resultData, struct {
-			Time  time.Time
-			Value float64
-		}{Time: t, Value: v})
-		return false, nil
-	})
-	if err != nil {
-		return api.ListWorkflowResults{}, err
-	}
-
-	// Save SMA points to DB and return the result
 	var upsertDBRes db.UpsertSMAActivityResults
-	err = workflow.ExecuteActivity(
+	return workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, db.DefaultActivityOptions()),
 		wf.db.UpsertSMAActivity, db.UpsertSMAActivityParams{
 			Exchange:     params.Exchange,
@@ -174,8 +182,4 @@ func (wf *workflows) generateAndUpsertSMA(
 			PriceType:    params.PriceType,
 			TimeSerie:    data,
 		}).Get(ctx, &upsertDBRes)
-
-	return api.ListWorkflowResults{
-		Data: resultData,
-	}, err
 }
