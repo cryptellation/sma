@@ -1,7 +1,6 @@
 package sma
 
 import (
-	"math"
 	"time"
 
 	"github.com/cryptellation/candlesticks/pkg/candlestick"
@@ -60,9 +59,13 @@ func NewPoint(params PointParameters) Point {
 	last, ok := params.Candlesticks.Last()
 	if ok {
 		p.Time = last.Time
-		p.Price = total / float64(count)
+		if count > 0 {
+			p.Price = total / float64(count)
+		} else {
+			p.Price = 0
+		}
 	} else {
-		p.Price = math.NaN()
+		p.Price = 0
 	}
 
 	return p
