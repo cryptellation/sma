@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"errors"
 	"time"
 
 	candlesticksapi "github.com/cryptellation/candlesticks/api"
@@ -12,12 +13,46 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+// validateListWorkflowParams checks if the required fields are filled and valid.
+func validateListWorkflowParams(params api.ListWorkflowParams) error {
+	if params.Exchange == "" {
+		return errors.New("exchange is required")
+	}
+	if params.Pair == "" {
+		return errors.New("pair is required")
+	}
+	if params.Period == "" {
+		return errors.New("period is required")
+	}
+	if params.PeriodNumber <= 0 {
+		return errors.New("period_number must be greater than 0")
+	}
+	if params.PriceType == "" {
+		return errors.New("price_type is required")
+	}
+	if params.Start.IsZero() {
+		return errors.New("start time is required")
+	}
+	if params.End.IsZero() {
+		return errors.New("end time is required")
+	}
+	if params.End.Before(params.Start) {
+		return errors.New("end time must be after start time")
+	}
+	return nil
+}
+
 // ListSMAWorkflow returns the SMA points for a given pair and exchange.
 func (wf *workflows) ListSMAWorkflow(
 	ctx workflow.Context,
 	params api.ListWorkflowParams,
 ) (api.ListWorkflowResults, error) {
 	logger := workflow.GetLogger(ctx)
+
+	// Validate parameters
+	if err := validateListWorkflowParams(params); err != nil {
+		return api.ListWorkflowResults{}, err
+	}
 
 	// Process the params
 	params.Start = params.Period.RoundTime(params.Start)
@@ -142,7 +177,7 @@ func (wf *workflows) generateSMA(
 		return nil, err
 	}
 
-	// Generate SMAs and return them
+	// Set the candlesticks to the list
 	csList := candlestick.NewList(params.Exchange, params.Pair, params.Period)
 	for _, cs := range res.List {
 		if err := csList.Set(cs); err != nil {
@@ -150,6 +185,7 @@ func (wf *workflows) generateSMA(
 		}
 	}
 
+	// Generate SMAs and return them
 	ts, err := sma.TimeSerie(sma.TimeSerieParams{
 		Candlesticks: csList,
 		PriceType:    params.PriceType,
