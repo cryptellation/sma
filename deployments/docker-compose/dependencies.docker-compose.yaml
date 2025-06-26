@@ -10,7 +10,7 @@ services:
     volumes:
       - ./postgresql:/docker-entrypoint-initdb.d/
     environment:
-      POSTGRES_PASSWORD: cryptellation_sma
+      POSTGRES_PASSWORD: cryptellation
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -67,7 +67,7 @@ services:
     image: ghcr.io/cryptellation/candlesticks
     command: ["worker", "database", "migrate"]
     environment:
-      SQL_DSN: "host=postgresql user=cryptellation_candlesticks password=cryptellation_candlesticks dbname=cryptellation_candlesticks sslmode=disable"
+      SQL_DSN: "host=postgresql user=cryptellation password=cryptellation dbname=candlesticks sslmode=disable"
     networks:
       - cryptellation-sma
   candlesticks-worker:
@@ -78,7 +78,7 @@ services:
       postgresql:
         condition: service_healthy
     environment:
-      SQL_DSN: "host=postgresql user=cryptellation_candlesticks password=cryptellation_candlesticks dbname=cryptellation_candlesticks sslmode=disable"
+      SQL_DSN: "host=postgresql user=cryptellation password=cryptellation dbname=candlesticks sslmode=disable"
       TEMPORAL_ADDRESS: temporal:7233
     env_file:
       - path: ../../.credentials.env
@@ -95,7 +95,7 @@ services:
     command: ["go", "run", "./cmd/worker", "database", "migrate"]
     working_dir: /go/src/github.com/cryptellation/sma
     environment:
-      SQL_DSN: "host=postgresql user=cryptellation_sma password=cryptellation_sma dbname=cryptellation_sma sslmode=disable"
+      SQL_DSN: "host=postgresql user=cryptellation password=cryptellation dbname=sma sslmode=disable"
     volumes:
       - gocache:/go/pkg/mod
       - gobuild:/root/.cache/go-build
