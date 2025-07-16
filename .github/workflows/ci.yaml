@@ -62,6 +62,20 @@ jobs:
           verb: call
           args: unit-tests --source-dir=. stdout 
 
+  integration-tests:
+    name: Run integration tests
+    needs: ["unit-tests"]
+    if: github.event_name == 'pull_request'
+    runs-on: k8s-home-runners
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dagger/dagger-for-github@8.0.0
+        with:
+          version: latest
+          verb: call
+          args: integration-tests --source-dir=. stdout 
+
   publish-tag:
     name: Publish the tag of the new version
     permissions:
