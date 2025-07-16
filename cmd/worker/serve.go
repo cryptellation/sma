@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os/signal"
 	"syscall"
 
@@ -57,7 +58,7 @@ func serve(cmd *cobra.Command, _ []string) error {
 
 	// Wait for everything to be finished
 	err = eg.Wait()
-	if err == context.Canceled || err == context.DeadlineExceeded {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 		return nil
 	}
 	return err
