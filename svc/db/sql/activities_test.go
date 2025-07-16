@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/cenkalti/backoff/v5"
 	"github.com/cryptellation/dbmigrator"
 	"github.com/cryptellation/sma/configs"
 	"github.com/cryptellation/sma/configs/sql/down"
@@ -25,7 +26,7 @@ type IndicatorsSuite struct {
 }
 
 func (suite *IndicatorsSuite) SetupSuite() {
-	act, err := New(context.Background(), viper.GetString(configs.EnvSQLDSN))
+	act, err := createTestDBClient(context.Background())
 	suite.Require().NoError(err)
 
 	mig, err := dbmigrator.NewMigrator(context.Background(), act.db, up.Migrations, down.Migrations, nil)
@@ -38,4 +39,15 @@ func (suite *IndicatorsSuite) SetupSuite() {
 func (suite *IndicatorsSuite) SetupTest() {
 	db := suite.DB.(*Activities)
 	suite.Require().NoError(db.Reset(context.Background()))
+}
+
+// createTestDBClient tries to create a new Activities client with backoff retry logic.
+func createTestDBClient(ctx context.Context) (*Activities, error) {
+	callback := func() (*Activities, error) {
+		return New(ctx, viper.GetString(configs.EnvSQLDSN))
+	}
+	return backoff.Retry(ctx, callback,
+		backoff.WithBackOff(backoff.NewExponentialBackOff()),
+		backoff.WithMaxTries(10),
+	)
 }
