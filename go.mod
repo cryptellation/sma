@@ -6,7 +6,7 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.2
 	github.com/cryptellation/candlesticks v1.0.4
 	github.com/cryptellation/dbmigrator v1.0.1
-	github.com/cryptellation/health v1.0.1
+	github.com/cryptellation/health v1.1.1
 	github.com/cryptellation/timeseries v1.1.0
 	github.com/cryptellation/version v1.1.0
 	github.com/jmoiron/sqlx v1.4.0
