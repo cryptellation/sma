@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
-
 	"github.com/cryptellation/sma/dagger/internal/dagger"
 )
 
 // DependenciesContainer provides containers for all test dependencies (e.g., Postgres, Redis, etc.).
 // PostgresContainer returns a service running Postgres initialized for integration tests.
-func PostgresContainer(ctx context.Context, dag *dagger.Client, sourceDir *dagger.Directory) *dagger.Service {
+func PostgresContainer(dag *dagger.Client, sourceDir *dagger.Directory) *dagger.Service {
 	initSQL := sourceDir.File("deployments/docker-compose/postgresql/cryptellation.sql")
 
 	c := dag.Container().
