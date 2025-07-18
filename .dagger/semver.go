@@ -42,15 +42,15 @@ func ProcessSemVerChange(version, title string) (change SemVerChange, newVersion
 	// Update version
 	switch semVerChange {
 	case SemVerChangeMajor:
-		major = major + 1
+		major++
 		minor = 0
 		patch = 0
 	case SemVerChangeMinor:
-		minor = minor + 1
+		minor++
 		patch = 0
 	case SemVerChangePatch:
-		patch = patch + 1
-	default:
+		patch++
+	case SemVerChangeNone, SemVerChangeUnknown:
 		// No change
 	}
 
