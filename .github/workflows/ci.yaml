@@ -74,7 +74,28 @@ jobs:
         with:
           version: latest
           verb: call
-          args: integration-tests --source-dir=. stdout 
+          args: integration-tests --source-dir=. stdout
+
+  end-to-end-tests:
+    name: Run end-to-end tests
+    needs: ["integration-tests"]
+    if: github.event_name == 'pull_request'
+    runs-on: k8s-home-runners
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dagger/dagger-for-github@8.0.0
+        with:
+          version: latest
+          verb: call
+          args: >-
+            end-to-end-tests
+            --source-dir=.
+            --binance-api-key=env:BINANCE_API_KEY
+            --binance-secret-key=env:BINANCE_SECRET_KEY
+        env:
+          BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
+          BINANCE_SECRET_KEY: ${{ secrets.BINANCE_SECRET_KEY }}
 
   publish-tag:
     name: Publish the tag of the new version
