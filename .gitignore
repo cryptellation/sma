@@ -2,3 +2,4 @@
 bin/
 tmp/
 __debug_bin*
+.cursor
