@@ -19,6 +19,8 @@ github.com/cryptellation/health v1.0.1 h1:wZp/y4z8CbSVKUWCL/+8TdPPAPWLScUrJl/YBJ
 github.com/cryptellation/health v1.0.1/go.mod h1:V5JEOyvgWHMerjn5XyXllNSRHxCeCxKmWtT8YCz6W3c=
 github.com/cryptellation/health v1.1.1 h1:LerBgSsMME5P6WGqG40uKoZI7QZ5ISpRGTJ1Toe4lWo=
 github.com/cryptellation/health v1.1.1/go.mod h1:V5JEOyvgWHMerjn5XyXllNSRHxCeCxKmWtT8YCz6W3c=
+github.com/cryptellation/health v1.2.0 h1:0j4k2VGRSgOTOX2ehrbcMQC9vkY5MLBuM0AaFRABSD8=
+github.com/cryptellation/health v1.2.0/go.mod h1:V5JEOyvgWHMerjn5XyXllNSRHxCeCxKmWtT8YCz6W3c=
 github.com/cryptellation/timeseries v1.1.0 h1:S5xFLGukQg+k22+L5151Na95+WjhhDKMK0hBkxfJYgo=
 github.com/cryptellation/timeseries v1.1.0/go.mod h1:SxqmKOjn/l5AXZGaLGA47oScXzpTcXtnmfom88uZdaY=
 github.com/cryptellation/version v1.1.0 h1:guPP4DVPj0Ie1Fnmmiv3VM4xqG7ZMJGjvrS41mHg5Pc=
