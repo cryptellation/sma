@@ -7,7 +7,7 @@ require (
 	github.com/cryptellation/candlesticks v1.0.4
 	github.com/cryptellation/dbmigrator v1.0.1
 	github.com/cryptellation/health v1.1.1
-	github.com/cryptellation/timeseries v1.1.0
+	github.com/cryptellation/timeseries v1.2.0
 	github.com/cryptellation/version v1.1.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9

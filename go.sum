@@ -19,6 +19,8 @@ github.com/cryptellation/health v1.1.1 h1:LerBgSsMME5P6WGqG40uKoZI7QZ5ISpRGTJ1To
 github.com/cryptellation/health v1.1.1/go.mod h1:V5JEOyvgWHMerjn5XyXllNSRHxCeCxKmWtT8YCz6W3c=
 github.com/cryptellation/timeseries v1.1.0 h1:S5xFLGukQg+k22+L5151Na95+WjhhDKMK0hBkxfJYgo=
 github.com/cryptellation/timeseries v1.1.0/go.mod h1:SxqmKOjn/l5AXZGaLGA47oScXzpTcXtnmfom88uZdaY=
+github.com/cryptellation/timeseries v1.2.0 h1:x90TnFhE3H4zPWEgLLekPMG7t611cnFvNU9DnFyCiD0=
+github.com/cryptellation/timeseries v1.2.0/go.mod h1:SxqmKOjn/l5AXZGaLGA47oScXzpTcXtnmfom88uZdaY=
 github.com/cryptellation/version v1.1.0 h1:guPP4DVPj0Ie1Fnmmiv3VM4xqG7ZMJGjvrS41mHg5Pc=
 github.com/cryptellation/version v1.1.0/go.mod h1:tKR3hxz6uB6AhgA0TKM3Qp6JNAgdQ2PcB0GGcsBWQvg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
