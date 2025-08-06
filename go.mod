@@ -8,7 +8,7 @@ require (
 	github.com/cryptellation/dbmigrator v1.0.1
 	github.com/cryptellation/health v1.2.0
 	github.com/cryptellation/timeseries v1.1.0
-	github.com/cryptellation/version v1.1.0
+	github.com/cryptellation/version v1.4.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/spf13/cobra v1.9.1
