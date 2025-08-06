@@ -12,7 +12,7 @@ jobs:
   check:
     name: Run code custom check
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: k8s-home-runners
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -21,11 +21,13 @@ jobs:
           version: latest
           verb: call
           args: check --source-dir=. stdout
+        env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
 
   generate:
     name: Run code generation and check that the generated code is up to date
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: k8s-home-runners
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -33,12 +35,14 @@ jobs:
         with:
           version: latest
           verb: call
-          args: generate --source-dir=. stdout 
+          args: generate --source-dir=. stdout
+        env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
 
   lint:
     name: Run linter
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: k8s-home-runners
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -46,13 +50,15 @@ jobs:
         with:
           version: latest
           verb: call
-          args: lint --source-dir=. stdout 
+          args: lint --source-dir=. stdout
+        env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
 
   unit-tests:
     name: Run unit tests
     needs: ["lint", "generate", "check"]
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: k8s-home-runners
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +66,9 @@ jobs:
         with:
           version: latest
           verb: call
-          args: unit-tests --source-dir=. stdout 
+          args: unit-tests --source-dir=. stdout
+        env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
 
   integration-tests:
     name: Run integration tests
@@ -75,6 +83,8 @@ jobs:
           version: latest
           verb: call
           args: integration-tests --source-dir=. stdout
+        env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
 
   end-to-end-tests:
     name: Run end-to-end tests
@@ -94,6 +104,7 @@ jobs:
             --binance-api-key=env:BINANCE_API_KEY
             --binance-secret-key=env:BINANCE_SECRET_KEY
         env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
           BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
           BINANCE_SECRET_KEY: ${{ secrets.BINANCE_SECRET_KEY }}
 
@@ -101,7 +112,7 @@ jobs:
     name: Publish the tag of the new version
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: k8s-home-runners
     timeout-minutes: 5
     if: github.ref == 'refs/heads/main'
     steps:
@@ -119,6 +130,7 @@ jobs:
             --user=env:GITHUB_ACTOR
             --token=env:GITHUB_TOKEN
         env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -127,7 +139,7 @@ jobs:
     needs: ["publish-tag"]
     permissions:
       packages: write
-    runs-on: ubuntu-latest
+    runs-on: k8s-home-runners
     timeout-minutes: 5
     if: github.ref == 'refs/heads/main'
     steps:
@@ -148,3 +160,5 @@ jobs:
           args: >-
             publish-container
             --source-dir=.
+        env:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: "tcp://dagger-engine.dagger.svc.cluster.local:8080"
