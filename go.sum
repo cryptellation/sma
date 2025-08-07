@@ -15,6 +15,8 @@ github.com/cryptellation/candlesticks v1.1.0 h1:4l46/xInwGJxNFGCvFXDLmgrMkOJBu+R
 github.com/cryptellation/candlesticks v1.1.0/go.mod h1:0lyK2y9RNKUOGnQFkeoyMCrkTuccdcnHXx4fndYVA8Y=
 github.com/cryptellation/dbmigrator v1.0.1 h1:LdtohjurN31oWpiF4EdE7irPdB8c3Q1ghY/OZlYB5QE=
 github.com/cryptellation/dbmigrator v1.0.1/go.mod h1:WtyJbIg0tAgEZIMnOjW2sTp1hVc4jRTK1xx2PD5zssk=
+github.com/cryptellation/dbmigrator v1.1.0 h1:n3wwqyQm2esSl+GusMEl/frYbfNm1d1fUk4LWkHvHdQ=
+github.com/cryptellation/dbmigrator v1.1.0/go.mod h1:WtyJbIg0tAgEZIMnOjW2sTp1hVc4jRTK1xx2PD5zssk=
 github.com/cryptellation/health v1.0.1 h1:wZp/y4z8CbSVKUWCL/+8TdPPAPWLScUrJl/YBJf5z5I=
 github.com/cryptellation/health v1.0.1/go.mod h1:V5JEOyvgWHMerjn5XyXllNSRHxCeCxKmWtT8YCz6W3c=
 github.com/cryptellation/health v1.1.1 h1:LerBgSsMME5P6WGqG40uKoZI7QZ5ISpRGTJ1Toe4lWo=
